@@ -6,7 +6,7 @@
 
 
 ## How to use:
-- double click to open
+- double click ffmpeg.bat to open
 - select from 3 options: rotate, trim, exit.
   ## for rotate:
 - give the video file's path, try not to contain any space in the begining or end of the path.
