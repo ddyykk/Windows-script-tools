@@ -1,9 +1,13 @@
 @echo off
+:: the windows batch script does not allow multiple instructions under if statement, enable this will make it possible
 setlocal enabledelayedexpansion
+:: put the whole code in a loop, this is the start of the loop
 :begin
+::clear the screen
 cls
 ::clear all the data
 set "filepath="""
+:: has to set filepath to empty here, otherwise it's not empty somehow, maybe it's null by default
 set "outputname="
 set "start="
 set "end="
@@ -14,18 +18,23 @@ set /p option="Do you want to rotate or trim a video? Enter 1 for rotate, 2 for 
 if "!option!"=="1" (
     :input_path1
     set /p filepath="Please enter the file path of the video you want to rotate: "
+    ::need to check if user input anything for the input file path, if not, go back to ask again
     if !filepath!=="" (
         echo:
         echo "Please input the right path for the video."
         goto input_path1
     )
+    ::to put a new line here
     echo:
     echo "Your file is !filepath!"
-    set /p "angle=Please enter the rotation angle (0 = 90CounterCLockwise and Vertical Flip, 1 = 90Clockwise, 2 = 90CounterClockwise, 3 = 90Clockwise and Vertical Flip): "
+    set /p "angle=Please enter the rotation angle (0 = 90 CounterCLockwise and Vertical Flip, 1 = 90 Clockwise, 2 = 90 CounterClockwise, 3 = 90 Clockwise and Vertical Flip): "
     echo !angle!
+    :: this calls a function to pass the input file name to the default output file.
+    :: the quotation mark is important otherwise file name cannot have any space in it.
     call :getfilename "!filepath!"
     set /p "outputname=Please enter the output file name or path (default is !outputname!): "
     echo "Your outputname is !outputname!"
+    ::this is for debug use
     ::echo .\ffmpeg -i "!filepath!" -vf "transpose=!angle!" "!outputname!"
     .\ffmpeg -i "!filepath!" -vf "transpose=!angle!" "!outputname!"
 )
@@ -47,6 +56,9 @@ if "!option!"=="3" (
 )
 goto begin
 
+::The ~nx modifier is used to extract the filename and extension from a file path variable. 
+::However, it only works directly on variables that are parameters to a script or function, not on arbitrary variables.
+::The 1 here means the first arguement that passed in, which is !filepath!.
 :getfilename
 set "outputname=%~nx1"
 goto :eof
