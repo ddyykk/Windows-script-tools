@@ -1,13 +1,13 @@
 @echo off
-:: the windows batch script does not allow multiple instructions under if statement, enable this will make it possible
+rem the windows batch script does not allow multiple instructions under if statement, enable this will make it possible
 setlocal enabledelayedexpansion
-:: put the whole code in a loop, this is the start of the loop
+rem put the whole code in a loop, this is the start of the loop
 :begin
-::clear the screen
+rem clear the screen
 cls
-::clear all the data
+rem clear all the data
 set "filepath="""
-:: has to set filepath to empty here, otherwise it's not empty somehow, maybe it's null by default
+rem has to set filepath to empty here, otherwise it's not empty somehow, maybe it's null by default
 set "outputname="
 set "start="
 set "end="
@@ -24,7 +24,7 @@ if "!option!"=="1" (
         echo "Please input the right path for the video."
         goto input_path1
     )
-    ::to put a new line here
+    rem to put a new line here
     echo:
     echo "Your file is !filepath!"
     set /p "angle=Please enter the rotation angle (0 = 90 CounterCLockwise and Vertical Flip, 1 = 90 Clockwise, 2 = 90 CounterClockwise, 3 = 90 Clockwise and Vertical Flip): "
@@ -36,8 +36,8 @@ if "!option!"=="1" (
     call :getfilename "!filepath!"
     set /p "outputname=Please enter the output file name or path (default is !outputname!): "
     echo "Your outputname is !outputname!"
-    ::this is for debug use
-    echo .\ffmpeg -i "!filepath!" -vf "transpose=!angle!" "!outputname!"
+    rem this is for debug use
+    rem echo .\ffmpeg -i "!filepath!" -vf "transpose=!angle!" "!outputname!"
     .\ffmpeg -i "!filepath!" -vf "transpose=!angle!" "!outputname!"
     timeout /t -1
 )
