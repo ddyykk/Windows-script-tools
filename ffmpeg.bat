@@ -13,8 +13,8 @@ set "start="
 set "end="
 set "option="
 set "angle="
-set /p option="Do you want to rotate or trim a video? Enter 1 for rotate, 2 for trim, 3 for exit: "
-
+rem set /p option="Do you want to rotate or trim a video? Enter 1 for rotate, 2 for trim, 3 for exit: "
+set /p option="Do you want to rotate, trim a video, convert audio to video or exit? Enter 1 for rotate, 2 for trim, 3 for audio to video, 4 for exit: "
 if "!option!"=="1" (
     :input_path1
     set /p filepath="Please enter the file path of the video you want to rotate: "
@@ -56,6 +56,24 @@ if "!option!"=="2" (
     timeout /t -1
 )
 if "!option!"=="3" (
+    :input_path3
+    set /p filepath="Please enter the file path of the audio you want to convert: "
+    if !filepath!=="" (
+        echo "Please input the right path for the audio."
+        goto input_path3
+    )
+    set /p imagepath="Please enter the file path of the image you want to use: "
+    if !imagepath!=="" (
+        echo "Please input the right path for the image."
+        goto input_path3
+    )
+    call :getfilename "!filepath!"
+    set /p outputname="Please enter the output file name or path (default is !outputname!.mp4): "
+    .\ffmpeg -loop 1 -i "!imagepath!" -i "!filepath!" -c:v libx264 -tune stillimage -c:a copy -b:a 192k -pix_fmt yuv420p -shortest "!outputname!"
+    rem this code makes the ffmpeg keep the audio codec and the video has same duration as audio file
+    timeout /t -1
+)
+if "!option!"=="4" (
     exit
 )
 goto begin
