@@ -43,17 +43,103 @@ if "!option!"=="1" (
 )
 if "!option!"=="2" (
     :input_path2
-    set /p filepath="Please enter the file path of the video you want to trim: "
-    if !filepath!=="" (
-        echo "Please input the right path for the video."
+    cls
+    echo =====================================
+    echo           VIDEO TRIMMING
+    echo =====================================
+    echo.
+    echo Tips: You can either:
+    echo  - Paste the path directly
+    echo  - Paste with quotes
+    echo  - Drag and drop the file
+    echo.
+    
+    set /p filepath="Enter video file path: "
+    rem Remove surrounding quotes if present
+    set "filepath=!filepath:"=!"
+    rem Remove leading/trailing spaces
+    for /f "tokens=* delims= " %%a in ("!filepath!") do set "filepath=%%a"
+    for /l %%a in (1,1,100) do if "!filepath:~-1!"==" " set "filepath=!filepath:~0,-1!"
+    
+    if "!filepath!"=="" (
+        echo [ERROR] Please input a valid path.
+        echo Press any key to try again...
+        pause > nul
         goto input_path2
     )
-    set /p start="Please enter the start time (in hh:mm:ss) of the section you want to keep: "
-    set /p end="Please enter the end time (in hh:mm:ss) of the section you want to keep: "
+    
+    echo.
+    echo Checking file...
+    if exist "!filepath!" (
+        echo [SUCCESS] File found: "!filepath!"
+    ) else (
+        echo [ERROR] File not found: "!filepath!"
+        echo Press any key to try again...
+        pause > nul
+        goto input_path2
+    )
+    
+    echo.
+    echo =====================================
+    echo           TIME SELECTION
+    echo =====================================
+    echo Format: hh:mm:ss (example: 00:01:30)
+    echo         or just seconds (example: 90)
+    echo.
+    set /p start="Enter start time: "
+    set /p end="Enter end time  : "
+    
     call :getfilename "!filepath!"
-    set /p outputname="Please enter the output file name or path (default is !outputname!): "
+    if "!outputname!"=="" set "outputname=output.mp4"
+    echo.
+    echo =====================================
+    echo           OUTPUT FILE
+    echo =====================================
+    echo.
+    set /p outputname="Enter output name [!outputname!]: "
+    rem Handle output name the same way as input
+    set "outputname=!outputname:"=!"
+    for /f "tokens=* delims= " %%a in ("!outputname!") do set "outputname=%%a"
+    for /l %%a in (1,1,100) do if "!outputname:~-1!"==" " set "outputname=!outputname:~0,-1!"
+    if "!outputname!"=="" set "outputname=output.mp4"
+    
+    echo.
+    echo =====================================
+    echo           CONFIRMATION
+    echo =====================================
+    echo.
+    echo Input file : "!filepath!"
+    echo Start time : !start!
+    echo End time   : !end!
+    echo Output file: "!outputname!"
+    echo.
+    echo Press [Enter] to start processing
+    echo Press [Ctrl+C] to cancel
+    pause > nul
+    
+    echo.
+    echo =====================================
+    echo           PROCESSING
+    echo =====================================
+    echo.
+    
     .\ffmpeg -i "!filepath!" -ss !start! -to !end! -c copy "!outputname!"
-    timeout /t -1
+    
+    if !errorlevel! equ 0 (
+        echo.
+        echo =====================================
+        echo [SUCCESS] Process complete!
+        echo Output saved as: "!outputname!"
+        echo =====================================
+    ) else (
+        echo.
+        echo =====================================
+        echo [ERROR] FFmpeg reported an error
+        echo Please check the output above
+        echo =====================================
+    )
+    echo.
+    pause
 )
 if "!option!"=="3" (
     :input_path3
